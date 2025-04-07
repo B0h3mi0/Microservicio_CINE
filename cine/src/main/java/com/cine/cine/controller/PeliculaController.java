@@ -1,20 +1,75 @@
-package com.cine.cine;
+package com.cine.cine.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.cine.cine.model.Pelicula;
+import com.cine.cine.service.PeliculaService;
+
+import java.util.List;
+import java.util.Optional;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
+
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 
 
 @RestController
+@RequestMapping("/peliculas")
+@CrossOrigin(origins = "*")
+public class PeliculaController {
+    @Autowired
+    private PeliculaService peliculaService;
+
+    @GetMapping
+    public List<Pelicula> getAllPeliculas(){
+        return peliculaService.getAllPeliculas();
+    }
+        
+    @GetMapping("/{id}")
+    public Optional<Pelicula> getPeliculaById(@PathVariable Long id) {
+        return peliculaService.getPeliculaById(id);
+    }
+
+    @PostMapping
+    public Pelicula creaPelicula(@RequestBody Pelicula pelicula) {
+        return peliculaService.createPelicula(pelicula);
+    }
+    
+    @PutMapping("/{id}")
+    public Pelicula updatePelicula(@PathVariable Long id, @RequestBody Pelicula pelicula) {
+        return peliculaService.updatePelicula(id, pelicula);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deletePelicula(@PathVariable Long id){
+        peliculaService.deletePelicula(id);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+/*
+@RestController
 public class PeliculaController {
 
     private List<Pelicula> peliculas = new ArrayList<>();
+}
 
+    
     public PeliculaController(){
         // PELICULA ID 1  //
         peliculas.add(new Pelicula(1,"Los 8 más odiados",2015,"Quentin Tarantino", "Wéstern/Acción","Wyoming, poco después de acabar la Guerra Civil estadounidense. Un cazarrecompensas, su preso, otro cazarrecompensas y un supuesto sheriff quedan atrapados junto a cuatro desconocidos en una fonda durante una tormenta de nieve. Entre los ocho individuos hay viejas cuentas pendientes que saldar, y probablemente cuando pase la tormenta no todos saldrán con vida del edificio."));
@@ -45,4 +100,12 @@ public class PeliculaController {
     }
     
 
-}
+}*/
+
+
+
+
+
+
+
+
