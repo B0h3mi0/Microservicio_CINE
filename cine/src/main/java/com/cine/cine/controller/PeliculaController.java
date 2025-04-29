@@ -1,6 +1,12 @@
 package com.cine.cine.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,6 +17,8 @@ import com.cine.cine.service.PeliculaService;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,29 +35,97 @@ public class PeliculaController {
     @Autowired
     private PeliculaService peliculaService;
 
-    @GetMapping
+    private static final Logger log = LoggerFactory.getLogger(PeliculaController.class);
+
+    /* @GetMapping                                  Obtener a todas las peliculas
     public List<Pelicula> getAllPeliculas(){
         return peliculaService.getAllPeliculas();
+    } */
+
+    @GetMapping
+    public CollectionModel<EntityModel<Pelicula>> getAllPeliculas() {
+        List<Pelicula> peliculas = peliculaService.getAllPeliculas();
+        log.info("GET /peliculas");
+        log.info("Retornando todos los peliculas");
+        List<EntityModel<Pelicula>> peliculasResources = peliculas.stream()
+            .map( pelicula -> EntityModel.of(pelicula,
+                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getPeliculaById(pelicula.getId())).withSelfRel()
+            ))
+            .collect(Collectors.toList());
+
+        WebMvcLinkBuilder linkTo = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getAllPeliculas());
+        CollectionModel<EntityModel<Pelicula>> resources = CollectionModel.of(peliculasResources, linkTo.withRel("peliculas"));
+
+        return resources;
     }
         
-    @GetMapping("/{id}")
+    /* @GetMapping("/{id}")  OBTENER POR ID
     public Optional<Pelicula> getPeliculaById(@PathVariable Long id) {
         return peliculaService.getPeliculaById(id);
+    } */
+
+    @GetMapping("/{id}")
+    public EntityModel<Pelicula> getPeliculaById(@PathVariable Long id) {
+        Optional<Pelicula> pelicula = peliculaService.getPeliculaById(id);
+
+        if (pelicula.isPresent()) {
+            return EntityModel.of(pelicula.get(),
+                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getPeliculaById(id)).withSelfRel(),
+                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getAllPeliculas()).withRel("all-peliculas"));
+        } else {
+            throw new PeliculaNotFoundException("Pelicula not found with id: " + id);
+        }
     }
 
-    @PostMapping
+    /* @PostMapping      CREAR UNA PELICULA
     public Pelicula creaPelicula(@RequestBody Pelicula pelicula) {
         return peliculaService.createPelicula(pelicula);
-    }
+    } */
     
+    @PostMapping
+    public EntityModel<Pelicula> createPelicula(@Validated @RequestBody Pelicula pelicula) {
+        Pelicula createdPelicula = peliculaService.createPelicula(pelicula);
+            return EntityModel.of(createdPelicula,
+                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getPeliculaById(createdPelicula.getId())).withSelfRel(),
+                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getAllPeliculas()).withRel("all-peliculas"));
+
+    }
+
+/*                                  ACTUALIZAR PELICULA
     @PutMapping("/{id}")
     public Pelicula updatePelicula(@PathVariable Long id, @RequestBody Pelicula pelicula) {
         return peliculaService.updatePelicula(id, pelicula);
+    } */
+
+    @PutMapping("/{id}")
+    public EntityModel<Pelicula> updatePelicula(@PathVariable Long id, @RequestBody Pelicula pelicula) {
+        Pelicula updatedPelicula = peliculaService.updatePelicula(id, pelicula);
+        return EntityModel.of(updatedPelicula,
+                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getPeliculaById(id)).withSelfRel(),
+                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getAllPeliculas()).withRel("all-peliculas"));
+
     }
+
+    /* @DeleteMapping("/{id}")   BORRAR UNA PELICULA
+    public void deletePelicula(@PathVariable Long id){
+        peliculaService.deletePelicula(id);
+    } */
 
     @DeleteMapping("/{id}")
     public void deletePelicula(@PathVariable Long id){
         peliculaService.deletePelicula(id);
+    }
+
+    static class ErrorResponse {
+        private final String message;
+    
+        public ErrorResponse(String message) {
+            this.message = message;
+        }
+    
+        public String getMessage() {
+            return message;
+        }
     }
 }
 
