@@ -1,0 +1,4 @@
+com\cine\cine\service\PeliculaServiceTest.class
+com\cine\cine\CineApplicationTests.class
+com\cine\cine\controller\PeliculaControllerTest.class
+com\cine\cine\repository\PeliculaRepositoryTest.class
