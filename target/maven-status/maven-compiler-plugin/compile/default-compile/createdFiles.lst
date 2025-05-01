@@ -1,0 +1,7 @@
+com\cine\cine\service\PeliculaServiceImpl.class
+com\cine\cine\controller\PeliculaNotFoundException.class
+com\cine\cine\service\PeliculaService.class
+com\cine\cine\controller\PeliculaController.class
+com\cine\cine\repository\PeliculaRepository.class
+com\cine\cine\CineApplication.class
+com\cine\cine\model\Pelicula.class
