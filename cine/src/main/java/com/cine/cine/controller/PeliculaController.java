@@ -2,6 +2,7 @@ package com.cine.cine.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.CollectionModel;
@@ -11,7 +12,10 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
 import com.cine.cine.model.Pelicula;
 import com.cine.cine.service.PeliculaService;
 
@@ -19,25 +23,20 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PutMapping;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
+
 
 
 
 @RestController
 @RequestMapping("/peliculas")
-@CrossOrigin(origins = "*")
 public class PeliculaController {
     @Autowired
     private PeliculaService peliculaService;
 
     private static final Logger log = LoggerFactory.getLogger(PeliculaController.class);
 
-    /* @GetMapping                                  Obtener a todas las peliculas
+    /*  @GetMapping                           
     public List<Pelicula> getAllPeliculas(){
         return peliculaService.getAllPeliculas();
     } */
@@ -59,7 +58,7 @@ public class PeliculaController {
         return resources;
     }
         
-    /* @GetMapping("/{id}")  OBTENER POR ID
+    /* @GetMapping("/{id}") 
     public Optional<Pelicula> getPeliculaById(@PathVariable Long id) {
         return peliculaService.getPeliculaById(id);
     } */
@@ -77,7 +76,7 @@ public class PeliculaController {
         }
     }
 
-    /* @PostMapping      CREAR UNA PELICULA
+    /* @PostMapping 
     public Pelicula creaPelicula(@RequestBody Pelicula pelicula) {
         return peliculaService.createPelicula(pelicula);
     } */
@@ -91,8 +90,8 @@ public class PeliculaController {
 
     }
 
-/*                                  ACTUALIZAR PELICULA
-    @PutMapping("/{id}")
+                            
+    /* @PutMapping("/{id}")
     public Pelicula updatePelicula(@PathVariable Long id, @RequestBody Pelicula pelicula) {
         return peliculaService.updatePelicula(id, pelicula);
     } */
@@ -106,7 +105,7 @@ public class PeliculaController {
 
     }
 
-    /* @DeleteMapping("/{id}")   BORRAR UNA PELICULA
+    /* @DeleteMapping("/{id}")  
     public void deletePelicula(@PathVariable Long id){
         peliculaService.deletePelicula(id);
     } */
@@ -114,7 +113,7 @@ public class PeliculaController {
     @DeleteMapping("/{id}")
     public void deletePelicula(@PathVariable Long id){
         peliculaService.deletePelicula(id);
-    }
+    } 
 
     static class ErrorResponse {
         private final String message;
